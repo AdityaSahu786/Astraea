@@ -1,0 +1,174 @@
+@import "tailwindcss";
+
+:root {
+  --background: #09090b;
+  --panel: rgba(18, 18, 21, 0.85);
+  --panel-2: #141418;
+  --border: rgba(39, 39, 42, 0.7);
+  --foreground: #f4f4f5;
+  --muted: #a1a1aa;
+  --accent: #f43f5e;
+  --accent-foreground: #ffffff;
+  --shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.light {
+  --background: #f8f9fa;
+  --panel: rgba(255, 255, 255, 0.9);
+  --panel-2: #ffffff;
+  --border: rgba(226, 232, 240, 0.9);
+  --foreground: #0f172a;
+  --muted: #64748b;
+  --accent: #f43f5e;
+  --accent-foreground: #ffffff;
+  --shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-panel: var(--panel);
+  --color-panel-2: var(--panel-2);
+  --color-edge: var(--border);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+html,
+body {
+  height: 100%;
+  background-color: var(--background);
+  color: var(--foreground);
+}
+
+body {
+  font-family: var(--font-sans), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+
+/* Panels */
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.panel-2 {
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+}
+
+/* Custom Scrollbars */
+.scroll-thin::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+.scroll-thin::-webkit-scrollbar-thumb {
+  background: rgba(63, 63, 70, 0.6);
+  border-radius: 99px;
+}
+.scroll-thin::-webkit-scrollbar-thumb:hover {
+  background: rgba(113, 113, 122, 0.8);
+}
+.scroll-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Leaflet dark theme map overrides */
+.leaflet-container {
+  background: #09090b !important;
+  font-family: var(--font-sans), system-ui, sans-serif;
+}
+.leaflet-control-attribution {
+  display: none !important;
+}
+.leaflet-bar a {
+  background: #141418 !important;
+  color: #f4f4f5 !important;
+  border-color: #27272a !important;
+}
+.leaflet-bar a:hover {
+  background: #1f1f23 !important;
+}
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
+  background: rgba(18, 18, 21, 0.95) !important;
+  color: #f4f4f5 !important;
+  border: 1px solid #27272a;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6) !important;
+  backdrop-filter: blur(12px);
+  border-radius: 12px !important;
+}
+
+/* Junction Map Nodes */
+.junction-label {
+  background: transparent;
+  border: none;
+}
+
+.officer-badge-new {
+  width: 22px;
+  height: 22px;
+  background: #f43f5e;
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 11px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 12px rgba(244, 63, 94, 0.6), 0 2px 4px rgba(0, 0, 0, 0.5);
+  border: 2px solid #ffffff;
+}
+
+.jnode-flat {
+  width: var(--d);
+  height: var(--d);
+  border-radius: 50%;
+  background: var(--c);
+  box-shadow: 0 0 8px var(--c);
+  border: 1.5px solid rgba(255, 255, 255, 0.6);
+}
+
+/* Custom Range Input */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+  width: 100%;
+}
+input[type="range"]:focus {
+  outline: none;
+}
+input[type="range"]::-webkit-slider-runnable-track {
+  background: transparent !important;
+  height: 4px;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  background: #ffffff;
+  height: 14px;
+  width: 14px;
+  border-radius: 50%;
+  margin-top: -5px;
+  border: 2px solid #f43f5e;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+  transition: transform 0.1s ease;
+}
+input[type="range"]:hover::-webkit-slider-thumb {
+  transform: scale(1.2);
+}
+
+/* Map Dark Filter */
+.leaflet-tile-container {
+  filter: brightness(0.7) contrast(1.2) saturate(0.8);
+}

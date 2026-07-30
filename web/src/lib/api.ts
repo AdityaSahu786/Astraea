@@ -8,6 +8,38 @@ export interface Venue {
   base_radius_km: number; typicalEvents: string[];
 }
 
+export interface HistoricalEvent {
+  id: string;
+  name: string;
+  venueId: string;
+  date: string;
+  attendance: number;
+  rain: number;
+  tempC: number;
+  dow: number;
+  startHour: number;
+  durationMin: number;
+}
+
+export interface Barricade {
+  edge: string;
+  road: string;
+  from: string;
+  to: string;
+  action: string;
+  reason: string;
+  route: [number, number][];
+}
+
+export interface Diversion {
+  from: string;
+  to: string;
+  divertedTimeMin: number;
+  avoids: string[];
+  reason: string;
+  suggestedRoute: [number, number][];
+}
+
 export interface EventTypeOption { key: string; label: string; }
 export interface WeatherOption { value: number; label: string; }
 

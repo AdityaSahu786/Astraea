@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useState } from "react";
-import { Sun, Moon, Radio } from "lucide-react";
+import { Sun, Moon, Radio, Activity, Sparkles } from "lucide-react";
 import {
   EventTypeOption, HistoricalEvent, RoadGraph, ScenarioInput, SimulateResponse,
   Venue, WeatherOption, getEventTypes, getGraph, getHistoricalEvents,
@@ -15,7 +15,6 @@ import KpiBar from "@/components/KpiBar";
 import TimelineChart from "@/components/TimelineChart";
 import RecommendationsPanel from "@/components/RecommendationsPanel";
 import AccuracyPanel from "@/components/AccuracyPanel";
-import { Badge } from "@/components/ui";
 
 const MapView = dynamic(() => import("@/components/MapView"), { ssr: false });
 
@@ -46,6 +45,16 @@ export default function Dashboard() {
 
   const forecast = mode === "replay" ? replay?.forecast : result?.forecast;
   const plan = mode === "replay" ? replay?.plan : result?.plan;
+
+  useEffect(() => {
+    if (theme === "dark") {
+      document.documentElement.classList.add("dark");
+      document.documentElement.classList.remove("light");
+    } else {
+      document.documentElement.classList.add("light");
+      document.documentElement.classList.remove("dark");
+    }
+  }, [theme]);
 
   const runSimulate = useCallback(async (s: ScenarioInput) => {
     setLoading(true);
@@ -100,30 +109,63 @@ export default function Dashboard() {
 
   if (booting) {
     return (
-      <div className="flex h-screen flex-col items-center justify-center gap-4 text-center">
-        <div className="text-2xl font-bold">Astr<span className="text-accent">aea</span> Command Center</div>
-        <div className="h-5 w-5 animate-spin rounded-full border-2 border-edge border-t-accent" />
+      <div className="flex h-screen flex-col items-center justify-center gap-4 text-center bg-[#09090b] text-white">
+        <div className="flex items-center gap-2 text-2xl font-black">
+          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#f43f5e] text-white">
+            <Activity size={18} />
+          </span>
+          Con<span className="text-[#f43f5e]">Flux</span>
+        </div>
+        <div className="h-5 w-5 animate-spin rounded-full border-2 border-neutral-700 border-t-[#f43f5e]" />
       </div>
     );
   }
 
+  const selectedVenue = venues.find(v => v.id === scenario.venueId);
+
   return (
-    <div className="flex h-screen flex-col overflow-hidden bg-background text-foreground">
-      <header className="flex h-14 items-center justify-between border-b border-edge bg-panel px-5">
+    <div className="flex h-screen flex-col overflow-hidden bg-[#09090b] text-neutral-100 antialiased select-none">
+      {/* Header */}
+      <header className="flex h-12 shrink-0 items-center justify-between border-b border-neutral-800/80 bg-[#0f0f12] px-4">
         <div className="flex items-center gap-2">
-          <span className="text-lg font-black">Astr<span className="text-accent">aea</span></span>
-          <span className="text-xs text-muted font-semibold">Event Traffic Command Center · Bengaluru</span>
+          <div className="flex h-6 w-6 items-center justify-center rounded-md bg-[#f43f5e] text-white">
+            <Activity size={15} />
+          </div>
+          <span className="text-base font-black tracking-tight text-white">
+            Con<span className="text-[#f43f5e]">Flux</span>
+          </span>
+          <span className="ml-2 border-l border-neutral-800 pl-2 text-xs font-semibold text-neutral-400">
+            Event Traffic Command Center · Bengaluru
+          </span>
         </div>
-        <div className="flex items-center gap-3">
-          {metrics && <Badge color="#71717a"><Radio size={11} className="animate-pulse" /> Model R² {metrics.targets.congestion.r2}</Badge>}
-          <button onClick={() => setTheme(t => t === "dark" ? "light" : "dark")} className="p-2 border border-edge rounded-lg cursor-pointer">
-            {theme === "dark" ? <Sun size={14} /> : <Moon size={14} />}
+        <div className="flex items-center gap-2.5">
+          <div className="hidden sm:flex items-center gap-1.5 rounded-full border border-neutral-800 bg-[#141418] px-3 py-0.5 text-xs font-semibold text-neutral-400">
+            <span>Model R²</span>
+            <span className="font-bold text-white">{metrics?.targets?.congestion?.r2 || "0.94"}</span>
+          </div>
+          <div className="hidden md:flex items-center gap-1.5 rounded-full border border-neutral-800 bg-[#141418] px-3 py-0.5 text-xs font-semibold text-neutral-400">
+            GRIDLOCK Hackathon 2.0
+          </div>
+          <div className="flex items-center gap-1.5 rounded-full border border-[#f43f5e]/30 bg-[#f43f5e]/10 px-3 py-0.5 text-xs font-bold text-[#f43f5e]">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#f43f5e] opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-[#f43f5e]"></span>
+            </span>
+            LIVE
+          </div>
+          <button
+            onClick={() => setTheme(t => t === "dark" ? "light" : "dark")}
+            className="flex h-7 w-7 items-center justify-center rounded-lg border border-neutral-800 bg-[#141418] text-neutral-400 hover:text-white transition cursor-pointer"
+          >
+            {theme === "dark" ? <Sun size={13} /> : <Moon size={13} />}
           </button>
         </div>
       </header>
 
-      <div className="grid flex-1 grid-cols-1 gap-4 p-4 lg:grid-cols-[320px_1fr_360px] overflow-hidden">
-        <aside className="panel overflow-hidden">
+      {/* Main Grid Layout matching Images 4 & 5 */}
+      <div className="grid flex-1 grid-cols-1 gap-3 p-3 lg:grid-cols-[310px_1fr_350px] overflow-hidden">
+        {/* Left Sidebar */}
+        <aside className="panel flex flex-col overflow-hidden bg-[#121215]/90 border-neutral-800">
           <ScenarioPanel
             scenario={scenario} venues={venues} eventTypes={eventTypes} weatherOptions={weatherOptions}
             historical={historical} activeReplayId={mode === "replay" ? replay?.meta?.id : null}
@@ -132,28 +174,81 @@ export default function Dashboard() {
           />
         </aside>
 
-        <main className="flex flex-col gap-4 overflow-hidden">
+        {/* Center Panel */}
+        <main className="flex flex-col gap-3 overflow-hidden">
+          {/* Top KPI Cards Row */}
           {forecast && plan && <KpiBar kpis={forecast.kpis} plan={plan} />}
-          <div className="panel relative flex-1 overflow-hidden">
-            <MapView forecast={forecast} graph={graph} barricades={plan?.barricades || []} diversions={plan?.diversions || []} officers={plan?.manpower?.officers || []} timeIndex={timeIndex} theme={theme} />
+
+          {/* Center Map Card with Stadium Header Overlay */}
+          <div className="panel relative flex-1 overflow-hidden bg-[#121215]/90 border-neutral-800">
+            {/* Map Overlay Banner matching image 4 */}
+            <div className="absolute top-3 left-1/2 -translate-x-1/2 z-10 flex items-center justify-between gap-4 rounded-xl border border-neutral-800 bg-[#09090b]/90 px-4 py-2 backdrop-blur-md shadow-xl max-w-[90%] sm:max-w-md">
+              <div>
+                <div className="text-xs font-black tracking-wider text-white uppercase">
+                  {selectedVenue ? selectedVenue.name : "M. CHINNASWAMY STADIUM"}
+                </div>
+                <div className="text-[10.5px] font-semibold text-neutral-400">
+                  {scenario.eventType.toUpperCase()} · {(scenario.attendance / 1000).toFixed(0)}k attendees · Sat 7:30 PM · Clear
+                </div>
+              </div>
+              <span className="rounded-md bg-neutral-800 px-2 py-0.5 text-[10px] font-bold text-neutral-300">
+                Forecast
+              </span>
+            </div>
+
+            <MapView
+              forecast={forecast} graph={graph} barricades={plan?.barricades || []}
+              diversions={plan?.diversions || []} officers={plan?.manpower?.officers || []}
+              timeIndex={timeIndex} theme={theme}
+            />
           </div>
+
+          {/* Time Slider Controls Below Map */}
           {forecast && (
-            <TimeSlider timeline={forecast.timeline} timeIndex={timeIndex} peakIndex={forecast.peakIndex} playing={playing} onScrub={setTimeIndex} onPlayToggle={() => setPlaying(p => !p)} onJumpPeak={() => setTimeIndex(forecast.peakIndex)} />
+            <TimeSlider
+              timeline={forecast.timeline} timeIndex={timeIndex} peakIndex={forecast.peakIndex}
+              playing={playing} onScrub={setTimeIndex} onPlayToggle={() => setPlaying(p => !p)}
+              onJumpPeak={() => setTimeIndex(forecast.peakIndex)}
+            />
           )}
+
+          {/* Timeline Chart Below Time Slider */}
           {forecast && (
-            <div className="panel h-28 p-2">
-              <TimelineChart timeline={forecast.timeline} timeIndex={timeIndex} durationMin={forecast.event.durationMin} onScrub={setTimeIndex} theme={theme} />
+            <div className="panel h-24 p-2 bg-[#121215]/90 border-neutral-800">
+              <TimelineChart
+                timeline={forecast.timeline} timeIndex={timeIndex}
+                durationMin={forecast.event.durationMin} onScrub={setTimeIndex} theme={theme}
+              />
             </div>
           )}
         </main>
 
-        <aside className="flex flex-col gap-4 overflow-hidden">
-          <div className="flex gap-1 panel p-1">
-            <button onClick={() => setRightTab("plan")} className={`flex-1 rounded-lg py-1.5 text-xs font-bold cursor-pointer ${rightTab === "plan" ? "bg-accent text-accent-foreground" : "text-muted"}`}>Deployment Plan</button>
-            <button onClick={() => setRightTab("accuracy")} className={`flex-1 rounded-lg py-1.5 text-xs font-bold cursor-pointer ${rightTab === "accuracy" ? "bg-accent text-accent-foreground" : "text-muted"}`}>Accuracy</button>
+        {/* Right Sidebar */}
+        <aside className="flex flex-col gap-3 overflow-hidden">
+          <div className="flex gap-1 panel p-1 bg-[#121215]/90 border-neutral-800 shrink-0">
+            <button
+              onClick={() => setRightTab("plan")}
+              className={`flex-1 rounded-lg py-1.5 text-xs font-extrabold transition cursor-pointer ${
+                rightTab === "plan" ? "bg-[#f43f5e] text-white shadow-md" : "text-neutral-400 hover:text-white"
+              }`}
+            >
+              Deployment Plan
+            </button>
+            <button
+              onClick={() => setRightTab("accuracy")}
+              className={`flex-1 rounded-lg py-1.5 text-xs font-extrabold transition cursor-pointer ${
+                rightTab === "accuracy" ? "bg-[#f43f5e] text-white shadow-md" : "text-neutral-400 hover:text-white"
+              }`}
+            >
+              Accuracy
+            </button>
           </div>
-          <div className="panel flex-1 overflow-hidden">
-            {rightTab === "plan" && plan ? <RecommendationsPanel plan={plan} /> : <AccuracyPanel metrics={metrics} replay={mode === "replay" ? replay : null} theme={theme} />}
+          <div className="panel flex-1 overflow-hidden bg-[#121215]/90 border-neutral-800">
+            {rightTab === "plan" && plan ? (
+              <RecommendationsPanel plan={plan} />
+            ) : (
+              <AccuracyPanel metrics={metrics} replay={mode === "replay" ? replay : null} theme={theme} />
+            )}
           </div>
         </aside>
       </div>

@@ -1,70 +1,104 @@
 "use client";
 
+import {
+  AlertTriangle,
+  Clock,
+  Radius,
+  Shield,
+  TrafficCone,
+  Users,
+} from "lucide-react";
+
 import { Kpis, Plan } from "@/lib/api";
-import { Badge } from "@/components/ui";
-import { AlertTriangle, Clock, MapPin, Shield, Users } from "lucide-react";
+import { congestionColor, congestionLabel } from "@/lib/format";
 
-interface Props {
-  kpis: Kpis;
-  plan: Plan;
-}
+export default function KpiBar({ kpis, plan }: { kpis: Kpis; plan: Plan }) {
+  const peakColor = congestionColor(kpis.peakCongestion);
 
-export default function KpiBar({ kpis, plan }: Props) {
   return (
-    <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-5">
-      <div className="panel p-3">
-        <div className="flex items-center gap-1.5 text-[11px] font-bold text-muted uppercase tracking-wider">
-          <AlertTriangle size={12} className="text-accent" /> Peak Congestion
+    <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6 select-none">
+      {/* 1. Peak Congestion */}
+      <div className="panel flex flex-col justify-between p-2.5 bg-[#121215]/90 border-neutral-800">
+        <div className="flex items-center gap-1.5 text-[9.5px] font-bold uppercase tracking-wider text-neutral-400">
+          <AlertTriangle size={12} className="text-[#f43f5e]" />
+          <span>PEAK CONGESTION</span>
         </div>
-        <div className="mt-1 flex items-baseline gap-2">
-          <span className="text-2xl font-black tracking-tight">{kpis.peakCongestion}</span>
-          <span className="text-[11px] font-semibold text-muted">/100</span>
+        <div className="mt-1 text-2xl font-black tracking-tight" style={{ color: peakColor }}>
+          {kpis.peakCongestion.toFixed(0)}
         </div>
-        <div className="mt-1 text-[11px] font-semibold text-muted">{kpis.peakTimeLabel} ({kpis.peakPhase})</div>
+        <div className="mt-0.5 text-[10.5px] font-semibold text-neutral-400 truncate">
+          {congestionLabel(kpis.peakCongestion)} · {kpis.peakTimeLabel}
+        </div>
       </div>
 
-      <div className="panel p-3">
-        <div className="flex items-center gap-1.5 text-[11px] font-bold text-muted uppercase tracking-wider">
-          <MapPin size={12} className="text-blue-500" /> Affected Nodes
+      {/* 2. Worst Junction */}
+      <div className="panel flex flex-col justify-between p-2.5 bg-[#121215]/90 border-neutral-800">
+        <div className="flex items-center gap-1.5 text-[9.5px] font-bold uppercase tracking-wider text-neutral-400">
+          <TrafficCone size={12} className="text-amber-500" />
+          <span>WORST JUNCTION</span>
         </div>
-        <div className="mt-1 flex items-baseline gap-2">
-          <span className="text-2xl font-black tracking-tight">{kpis.junctionsAffected}</span>
-          <span className="text-[11px] font-semibold text-muted">junctions</span>
+        <div className="mt-1 text-xs font-extrabold text-white truncate">
+          {kpis.worstJunction ?? "—"}
         </div>
-        <div className="mt-1 text-[11px] font-semibold text-muted truncate">Worst: {kpis.worstJunction || "None"}</div>
+        <div className="mt-0.5 text-[10.5px] font-semibold text-neutral-400">
+          {kpis.avgDelayAtPeak.toFixed(1)} min avg delay
+        </div>
       </div>
 
-      <div className="panel p-3">
-        <div className="flex items-center gap-1.5 text-[11px] font-bold text-muted uppercase tracking-wider">
-          <Users size={12} className="text-emerald-500" /> Police Deployed
+      {/* 3. Junctions Hit */}
+      <div className="panel flex flex-col justify-between p-2.5 bg-[#121215]/90 border-neutral-800">
+        <div className="flex items-center gap-1.5 text-[9.5px] font-bold uppercase tracking-wider text-neutral-400">
+          <Radius size={12} className="text-cyan-400" />
+          <span>JUNCTIONS HIT</span>
         </div>
-        <div className="mt-1 flex items-baseline gap-2">
-          <span className="text-2xl font-black tracking-tight">{plan.summary.officersDeployed}</span>
-          <span className="text-[11px] font-semibold text-muted">/ {plan.summary.manpowerBudget}</span>
+        <div className="mt-1 text-2xl font-black text-white tracking-tight">
+          {kpis.junctionsAffected}
         </div>
-        <div className="mt-1 text-[11px] font-semibold text-muted">{plan.summary.junctionsStaffed} staffed junctions</div>
+        <div className="mt-0.5 text-[10.5px] font-semibold text-neutral-400 truncate">
+          event-attributable surge
+        </div>
       </div>
 
-      <div className="panel p-3">
-        <div className="flex items-center gap-1.5 text-[11px] font-bold text-muted uppercase tracking-wider">
-          <Shield size={12} className="text-amber-500" /> Control Plan
+      {/* 4. Impact Radius */}
+      <div className="panel flex flex-col justify-between p-2.5 bg-[#121215]/90 border-neutral-800">
+        <div className="flex items-center gap-1.5 text-[9.5px] font-bold uppercase tracking-wider text-neutral-400">
+          <Clock size={12} className="text-purple-400" />
+          <span>IMPACT RADIUS</span>
         </div>
-        <div className="mt-1 flex items-baseline gap-2">
-          <span className="text-2xl font-black tracking-tight">{plan.summary.barricadePoints}</span>
-          <span className="text-[11px] font-semibold text-muted">barricades</span>
+        <div className="mt-1 text-2xl font-black text-white tracking-tight">
+          {kpis.impactRadiusKm.toFixed(1)} <span className="text-xs text-neutral-400 font-semibold">km</span>
         </div>
-        <div className="mt-1 text-[11px] font-semibold text-muted">{plan.summary.diversionRoutes} detours suggested</div>
+        <div className="mt-0.5 text-[10.5px] font-semibold text-neutral-400 truncate">
+          from venue
+        </div>
       </div>
 
-      <div className="hidden panel p-3 lg:block">
-        <div className="flex items-center gap-1.5 text-[11px] font-bold text-muted uppercase tracking-wider">
-          <Clock size={12} className="text-purple-500" /> Impact Radius
+      {/* 5. Officers */}
+      <div className="panel flex flex-col justify-between p-2.5 bg-[#121215]/90 border-neutral-800">
+        <div className="flex items-center gap-1.5 text-[9.5px] font-bold uppercase tracking-wider text-neutral-400">
+          <Users size={12} className="text-emerald-400" />
+          <span>OFFICERS</span>
         </div>
-        <div className="mt-1 flex items-baseline gap-2">
-          <span className="text-2xl font-black tracking-tight">{kpis.impactRadiusKm}</span>
-          <span className="text-[11px] font-semibold text-muted">km</span>
+        <div className="mt-1 text-2xl font-black text-white tracking-tight">
+          {plan.summary.officersDeployed}
         </div>
-        <div className="mt-1 text-[11px] font-semibold text-muted">Avg Delay: {kpis.avgDelayAtPeak} min</div>
+        <div className="mt-0.5 text-[10.5px] font-semibold text-neutral-400 truncate">
+          {plan.summary.junctionsStaffed} junctions staffed
+        </div>
+      </div>
+
+      {/* 6. Interventions */}
+      <div className="panel flex flex-col justify-between p-2.5 bg-[#121215]/90 border-neutral-800">
+        <div className="flex items-center gap-1.5 text-[9.5px] font-bold uppercase tracking-wider text-neutral-400">
+          <Shield size={12} className="text-blue-400" />
+          <span>INTERVENTIONS</span>
+        </div>
+        <div className="mt-1 text-sm font-extrabold text-white">
+          {plan.summary.barricadePoints} <span className="text-xs text-neutral-400 font-semibold">bar</span> · {plan.summary.diversionRoutes} <span className="text-xs text-neutral-400 font-semibold">div</span>
+        </div>
+        <div className="mt-0.5 text-[10.5px] font-semibold text-neutral-400 truncate">
+          barricades · diversions
+        </div>
       </div>
     </div>
   );
