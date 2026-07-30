@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+*.joblib
+
+# Node / Next.js
+node_modules/
+.next/
+out/
+build/
+dist/
+
+# OS & Environment
+.DS_Store
+*.log
+.env
+.env.local
