@@ -6,7 +6,9 @@ import { Sun, Moon, Radio, Activity, Sparkles } from "lucide-react";
 import {
   EventTypeOption, HistoricalEvent, RoadGraph, ScenarioInput, SimulateResponse,
   Venue, WeatherOption, getEventTypes, getGraph, getHistoricalEvents,
-  getMetrics, getReplay, getVenues, getWeatherOptions, simulate
+  getMetrics, getReplay, getVenues, getWeatherOptions, simulate,
+  FALLBACK_VENUES, FALLBACK_EVENT_TYPES, FALLBACK_WEATHER_OPTIONS,
+  FALLBACK_HISTORICAL_EVENTS, FALLBACK_GRAPH, FALLBACK_METRICS
 } from "@/lib/api";
 
 import ScenarioPanel from "@/components/ScenarioPanel";
@@ -25,12 +27,12 @@ const DEFAULT_SCENARIO: ScenarioInput = {
 
 export default function Dashboard() {
   const [theme, setTheme] = useState<"light" | "dark">("dark");
-  const [venues, setVenues] = useState<Venue[]>([]);
-  const [eventTypes, setEventTypes] = useState<EventTypeOption[]>([]);
-  const [weatherOptions, setWeatherOptions] = useState<WeatherOption[]>([]);
-  const [historical, setHistorical] = useState<HistoricalEvent[]>([]);
-  const [graph, setGraph] = useState<RoadGraph | null>(null);
-  const [metrics, setMetrics] = useState<any>(null);
+  const [venues, setVenues] = useState<Venue[]>(FALLBACK_VENUES);
+  const [eventTypes, setEventTypes] = useState<EventTypeOption[]>(FALLBACK_EVENT_TYPES);
+  const [weatherOptions, setWeatherOptions] = useState<WeatherOption[]>(FALLBACK_WEATHER_OPTIONS);
+  const [historical, setHistorical] = useState<HistoricalEvent[]>(FALLBACK_HISTORICAL_EVENTS);
+  const [graph, setGraph] = useState<RoadGraph | null>(FALLBACK_GRAPH);
+  const [metrics, setMetrics] = useState<any>(FALLBACK_METRICS);
 
   const [scenario, setScenario] = useState<ScenarioInput>(DEFAULT_SCENARIO);
   const [result, setResult] = useState<SimulateResponse | null>(null);
@@ -87,14 +89,14 @@ export default function Dashboard() {
       try {
         const [v, et, wo, hist, g, m] = await Promise.all([
           getVenues(), getEventTypes(), getWeatherOptions(),
-          getHistoricalEvents(), getGraph(), getMetrics().catch(() => null),
+          getHistoricalEvents(), getGraph(), getMetrics(),
         ]);
         setVenues(v); setEventTypes(et); setWeatherOptions(wo);
         setHistorical(hist); setGraph(g); setMetrics(m);
         const r = await simulate(DEFAULT_SCENARIO);
         setResult(r); setTimeIndex(r.forecast.peakIndex);
       } catch (e) {
-        console.error(e);
+        console.error("Dashboard init error:", e);
       } finally {
         setBooting(false);
       }
@@ -114,7 +116,7 @@ export default function Dashboard() {
           <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#f43f5e] text-white">
             <Activity size={18} />
           </span>
-          Con<span className="text-[#f43f5e]">Flux</span>
+          Astra<span className="text-[#f43f5e]">ea</span>
         </div>
         <div className="h-5 w-5 animate-spin rounded-full border-2 border-neutral-700 border-t-[#f43f5e]" />
       </div>
@@ -132,7 +134,7 @@ export default function Dashboard() {
             <Activity size={15} />
           </div>
           <span className="text-base font-black tracking-tight text-white">
-            Con<span className="text-[#f43f5e]">Flux</span>
+            Astra<span className="text-[#f43f5e]">ea</span>
           </span>
           <span className="ml-2 border-l border-neutral-800 pl-2 text-xs font-semibold text-neutral-400">
             Event Traffic Command Center · Bengaluru
@@ -144,7 +146,7 @@ export default function Dashboard() {
             <span className="font-bold text-white">{metrics?.targets?.congestion?.r2 || "0.94"}</span>
           </div>
           <div className="hidden md:flex items-center gap-1.5 rounded-full border border-neutral-800 bg-[#141418] px-3 py-0.5 text-xs font-semibold text-neutral-400">
-            GRIDLOCK Hackathon 2.0
+            Predictive AI v1.0
           </div>
           <div className="flex items-center gap-1.5 rounded-full border border-[#f43f5e]/30 bg-[#f43f5e]/10 px-3 py-0.5 text-xs font-bold text-[#f43f5e]">
             <span className="relative flex h-2 w-2">
@@ -199,7 +201,7 @@ export default function Dashboard() {
             <MapView
               forecast={forecast} graph={graph} barricades={plan?.barricades || []}
               diversions={plan?.diversions || []} officers={plan?.manpower?.officers || []}
-              timeIndex={timeIndex} theme={theme}
+              selectedVenue={selectedVenue} timeIndex={timeIndex} theme={theme}
             />
           </div>
 

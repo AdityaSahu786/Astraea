@@ -73,7 +73,13 @@ export default function ScenarioPanel({
         <select
           className={selectClass}
           value={scenario.venueId}
-          onChange={(e) => onChange({ venueId: e.target.value })}
+          onChange={(e) => {
+            const newVenueId = e.target.value;
+            const newV = venues.find((v) => v.id === newVenueId);
+            const newCap = newV ? newV.capacity : scenario.attendance;
+            const newAtt = Math.min(scenario.attendance, newCap);
+            onChange({ venueId: newVenueId, attendance: newAtt });
+          }}
         >
           {venues.map((v) => (
             <option key={v.id} value={v.id}>

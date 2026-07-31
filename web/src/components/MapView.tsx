@@ -4,7 +4,7 @@ import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import { useEffect } from "react";
 import { MapContainer, Marker, Polyline, TileLayer, Tooltip } from "react-leaflet";
-import { Barricade, Diversion, Forecast, ManpowerOfficer, RoadGraph } from "@/lib/api";
+import { Barricade, Diversion, Forecast, ManpowerOfficer, RoadGraph, Venue } from "@/lib/api";
 import { congestionColor, congestionLabel } from "@/lib/format";
 import { Layers } from "lucide-react";
 
@@ -48,12 +48,14 @@ function stadiumIcon() {
 const BLR_CENTER: [number, number] = [12.9750, 77.5980];
 
 export default function MapView({
-  forecast, graph, barricades, diversions, officers, timeIndex, theme = "dark"
+  forecast, graph, barricades, diversions, officers, selectedVenue, timeIndex, theme = "dark"
 }: {
   forecast?: Forecast; graph?: RoadGraph | null; barricades?: Barricade[];
-  diversions?: Diversion[]; officers?: ManpowerOfficer[]; timeIndex: number; theme?: string;
+  diversions?: Diversion[]; officers?: ManpowerOfficer[]; selectedVenue?: Venue; timeIndex: number; theme?: string;
 }) {
   const bucket = forecast?.timeline[timeIndex];
+  const venuePos: [number, number] = selectedVenue ? [selectedVenue.lat, selectedVenue.lng] : [12.9788, 77.5996];
+  const venueName = selectedVenue ? selectedVenue.name : "M. CHINNASWAMY STADIUM";
 
   // Map of node position for drawing edges
   const nodeMap = new Map<string, { lat: number; lng: number }>();
@@ -140,11 +142,11 @@ export default function MapView({
           );
         })}
 
-        {/* Stadium Marker */}
-        <Marker position={[12.9788, 77.5996]} icon={stadiumIcon()}>
+        {/* Venue Marker */}
+        <Marker position={venuePos} icon={stadiumIcon()}>
           <Tooltip direction="top" permanent offset={[0, -16]} className="venue-tooltip-custom">
-            <span className="text-[10px] font-black text-white bg-black/80 px-2 py-0.5 rounded border border-neutral-700">
-              M. CHINNASWAMY STADIUM
+            <span className="text-[10px] font-black uppercase text-white bg-black/80 px-2 py-0.5 rounded border border-neutral-700">
+              {venueName}
             </span>
           </Tooltip>
         </Marker>
