@@ -27,11 +27,13 @@ _HIST_BY_ID = {h["id"]: h for h in HISTORICAL_EVENTS}
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Warm models on startup
+    # Warm or train models on startup
     try:
         Forecaster.get()
     except FileNotFoundError:
-        pass
+        print("[lifespan] Model artifacts missing. Auto-training model on startup...")
+        from app.ml.train import train
+        train()
     yield
 
 
